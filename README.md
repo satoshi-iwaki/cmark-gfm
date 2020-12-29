@@ -101,7 +101,7 @@ Or, to create Xcode project files on OSX:
 
     mkdir build
     cd build
-    cmake -G Xcode ..
+    cmake -G Xcode "-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64" ..
     open cmark.xcodeproj
 
 The GNU Makefile also provides a few other targets for developers.
