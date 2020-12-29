@@ -3,12 +3,12 @@
 #include <render.h>
 #include <html.h>
 
-struct emoji_code {
+typedef struct emoji_code {
     char *name;
     char *code;
-};
+} emoji_code;
 
-static const struct emoji_code EMOJI_CODES[] = {
+static const emoji_code EMOJI_CODES[] = {
     {"-1", "&#x1f44e;"},
     {"+1", "&#x1f44d;"},
     {"100", "&#x1f4af;"},
@@ -2023,11 +2023,13 @@ static void postprocess_text(cmark_parser *parser, cmark_node *text) {
     uint8_t *data = text->as.literal.data;
     size_t size = text->as.literal.len;
     
-    size_t length = sizeof(EMOJI_CODES) / sizeof(struct emoji_code);
+    size_t length = sizeof(EMOJI_CODES) / sizeof(emoji_code);
     for (size_t index = 0; index < length; index++) {
-        if (strncmp(EMOJI_CODES[index].name, (char *)data, size) == 0) {
+        emoji_code code = EMOJI_CODES[index];
+        if (strnlen(code.name, 255) == size &&
+            strncmp(code.name, (char *)data, size) == 0) {
             cmark_node *emoji_text = cmark_node_new_with_mem(CMARK_NODE_HTML_INLINE, parser->mem);
-            cmark_node_set_literal(emoji_text, EMOJI_CODES[index].code);
+            cmark_node_set_literal(emoji_text, code.code);
             cmark_node_replace(text, emoji_text);
             return;
         }
